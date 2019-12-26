@@ -106,7 +106,7 @@ Another interesting thing to look at is how many of the recovered orthogroups ar
 
 <br>
 
-Here the expected value is 10,000 since this is the number of genes in the starting proteome of the simulated evolution, and no gene duplications or losses are allowed. We see that only when these initial genes evolve for very little time we are able to estimate a total number of single-copy groups that approximates the desired value. As guide trees grow larger, these estimates quickly become dependent on the alpha paramter of rate variation among sites. For larger alphas, we lose ability to recover even 25% of the desired amount of single-copy orthogroups when the scaler becomes >2.5. For smaller alphas, we are able to recover more than half of the 10,000 single-copy orthogroups for scalars <5.
+Here the expected value is 10,000 since this is the number of genes in the starting proteome of the simulated evolution, and no gene duplications or losses are allowed. We see that only when these initial genes evolve for very little time we are able to estimate a total number of single-copy groups that approximates the desired value. As guide trees grow larger, these estimates quickly become dependent on the alpha paramter of rate variation among sites. For larger alphas, we lose ability to recover even 25% of the desired amount of single-copy orthogroups when the scaler becomes >2.5. For smaller alphas, we are able to recover more than half of the `10,000` single-copy orthogroups for scalars < `5`.
 
 <br>
 <br>
