@@ -11,14 +11,9 @@ output:
     number_sections: false     # if you want number sections at each table header
     theme: cosmo              # many options for theme, this one is my favorite.
     highlight: textmate           # specifies the syntax highlighting style
-    # override defaults by calling with custom params from command line https://bookdown.org/yihui/rmarkdown/params-knit.html 15.3.2
 editor_options:
   chunk_output_type: console
 ---
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
 
 ## Introduction
 
