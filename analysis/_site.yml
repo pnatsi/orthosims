@@ -10,7 +10,7 @@ navbar:
   - text: License
     href: license.html
   - text: Overview
-    href: report.html
+    href: overview.html
   right:
   - icon: fa-github
     text: Source code
