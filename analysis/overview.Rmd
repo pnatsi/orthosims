@@ -99,7 +99,13 @@ scale_color_gradient2(midpoint = mean(ortho_results$alpha),
                         low      = "#20B2AA",
                         mid      = "#DCDCDC",
                         high     = "red",
-                        space    = "Lab")
+                        space    = "Lab") +
+  
+geom_vline(xintercept = 2, linetype = 2, colour = "grey") +
+
+geom_vline(xintercept = 5, linetype = 2, colour = "grey") + 
+
+geom_hline(yintercept = 10000, linetype = 1, colour = "#006400", alpha = 0.4)
 
 
 scalar_plot
@@ -139,8 +145,9 @@ scale_color_gradient2(midpoint = mean(ortho_results$alpha),
                         low      = "#20B2AA",
                         mid      = "#DCDCDC",
                         high     = "red",
-                        space    = "Lab")
-
+                        space    = "Lab") +
+  
+geom_hline(yintercept = 0, linetype = 1, colour = "#006400", alpha = 0.4)
 
 scalar_plot
 
@@ -184,7 +191,9 @@ scale_color_gradient2(midpoint = mean(ortho_results$alpha),
                         low      = "#20B2AA",
                         mid      = "#DCDCDC",
                         high     = "red",
-                        space    = "Lab")
+                        space    = "Lab") +
+  
+geom_hline(yintercept = 10000, linetype = 1, colour = "#006400", alpha = 0.4)
 
 
 scalar_plot
@@ -231,8 +240,9 @@ scale_color_gradient2(midpoint = mean(ortho_results$alpha),
                         low      = "#20B2AA",
                         mid      = "#DCDCDC",
                         high     = "red",
-                        space    = "Lab")
+                        space    = "Lab") +
 
+geom_hline(yintercept = 44, linetype = 1, colour = "#006400", alpha = 0.4)
 
 scalar_plot
 
