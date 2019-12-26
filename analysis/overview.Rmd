@@ -36,7 +36,7 @@ Multiple simulation experiments were performed under different evolutionary scen
 In each repeat, the starting genome comprised of 10,000 genes that evolved throughout the guide tree under the LG model exchangeabilities. Zero gene duplication and gene loss rates were specified, so each of the 44 resulting proteomes will also contain 10,000 single-copy genes. 
 Every gene from one proteome will have exactly one orthologue in each of the rest 43 proteomes, for a total of 10,000 single-copy groups of orthologues with 44 genes each.
 
-Orthofinder was applied in the simulated proteomes and the expected result was to recover 10,000 single-copy orthogroups with 44 genes each. Any deviation from this will be due to OrthoFinder's inability to correctly recover a fraction of these groups. In the end, the goal of this work is to assess OrthoFinder's performance in recovering metazoan single-copy orthologues in relation to how divergent these are from each other. This is of great interest because there are known instances of Metazoa species that evolve in faster rates than others, so their orthologue genes will be more diverged compared to slower-evolving species. Nevertheless, correctly identifying orthology relationships is critically important in the context of reconstructing the animal Tree of Life.
+Orthofinder was applied in the simulated proteomes and the expected result was to recover 10,000 single-copy orthogroups with 44 genes each. Any deviation from this will be due to OrthoFinder's inability to correctly recover a fraction of these groups. In the end, the goal of this work is to assess OrthoFinder's performance in recovering metazoan single-copy orthologues in relation to how divergent these are from each other. This is of great interest because there are known instances of Metazoa species that evolve in faster rates than others, so their orthologue genes will be more divergent compared to slower-evolving species. Nevertheless, correctly identifying orthology relationships is critically important in the context of reconstructing the animal Tree of Life.
 
 ## Simulating Genome Evolution
 
@@ -157,7 +157,7 @@ scalar_plot
 
 
 
-Here the trend becomes clearer. For shorter guide trees almost all genes are assigned to some orthogroup but as the guide tree become larger, the number of unassigned genes is analogous to the alpha parameter. For the same guide tree length, larger alpha leads to more genes not placed in any orthogroup, probably because they evolved faster than their orthologues and became so diverged that their relationship could not be recognised by OrthoFinder anymore. We can see now that for large guide trees and large alphas (top-right corner), almost 400,000 of the 440,000 genes were left without an orthogroup. So, the small number of orthogroups that was observed in the previous plot for this setting was seen because the majority of the input genes were too distant from each other to be placed in an orthogroup.
+Here the trend becomes clearer. For shorter guide trees almost all genes are assigned to some orthogroup but as the guide tree become larger, the number of unassigned genes is analogous to the alpha parameter. For the same guide tree length, larger alpha leads to more genes not placed in any orthogroup, probably because they evolved faster than their orthologues and became so divergent that their relationship could not be recognised by OrthoFinder anymore. We can see now that for large guide trees and large alphas (top-right corner), almost 400,000 of the 440,000 genes were left without an orthogroup. So, the small number of orthogroups that was observed in the previous plot for this setting was seen because the majority of the input genes were too distant from each other to be placed in an orthogroup.
 
 
 
@@ -258,7 +258,7 @@ Again the trend is clear. Here, the expected value is 44, equal to the number of
 
 ## Verdict and next steps
 
-It is clear that when orthologous genes become too diverge, either because they evolve faster or because they evolve for more time, OrthoFinder becomes less and less able to correctly recover our 10,000 44-species single-copy orthogroups. Even though the data used come from simulations which oversimplifies true events, the remarks made will most likely hold for real data as well. Events such as gene duplication, gene loss, horizontal gene transfer, incomplete lineage sorting etc. complicate the real evolutionary process and make the accurate inference of single-copy orthogroups much more than in the "ideal" simulation environment. 
+It is clear that when orthologous genes become too divergent, either because they evolve faster or because they evolve for more time, OrthoFinder becomes less and less able to correctly recover our 10,000 44-species single-copy orthogroups. Even though the data used come from simulations which oversimplifies true events, the remarks made will most likely hold for real data as well. Events such as gene duplication, gene loss, horizontal gene transfer, incomplete lineage sorting etc. complicate the real evolutionary process and make the accurate inference of single-copy orthogroups much more than in the "ideal" simulation environment. 
 
 More things that would be interesting to look at in the results of OrthoFinder in simulated proteomes are:
 
