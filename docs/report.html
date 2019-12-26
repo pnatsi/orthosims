@@ -503,10 +503,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcompnatsiorthosimstree3332461eb4bc9a22ad89572cc4cf86bbb08ab538targetblank3332461a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/pnatsi/orthosims/tree/3332461eb4bc9a22ad89572cc4cf86bbb08ab538" target="_blank">3332461</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcompnatsiorthosimstree0b63717f6349838b4f4672dcf2aa6a6a7e59c1fbtargetblank0b63717a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/pnatsi/orthosims/tree/0b63717f6349838b4f4672dcf2aa6a6a7e59c1fb" target="_blank">0b63717</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcompnatsiorthosimstree3332461eb4bc9a22ad89572cc4cf86bbb08ab538targetblank3332461a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcompnatsiorthosimstree0b63717f6349838b4f4672dcf2aa6a6a7e59c1fbtargetblank0b63717a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -550,6 +550,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/pnatsi/orthosims/blob/0b63717f6349838b4f4672dcf2aa6a6a7e59c1fb/analysis/report.Rmd" target="_blank">0b63717</a>
+</td>
+<td>
+pnatsi
+</td>
+<td>
+2019-12-26
+</td>
+<td>
+Migrates report.Rmd in analysis/
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/pnatsi/orthosims/1e29fcb6e8b50691f739fabf4d37ab8a7df369b2/docs/report.html" target="_blank">1e29fcb</a>
+</td>
+<td>
+pnatsi
+</td>
+<td>
+2019-12-26
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -637,7 +671,7 @@ head(ortho_results)</code></pre>
 <p><br></p>
 <pre><code></code></pre>
 <p><br></p>
-<p>Here the expected value is 10,000 since this is the number of genes in the starting proteome of the simulated evolution, and no gene duplications or losses are allowed. We see that only when these initial genes evolve for very little time we are able to estimate a total number of single-copy groups that approximates the desired value. As guide trees grow larger, these estimates quickly become dependent on the alpha paramter of rate variation among sites. For larger alphas, we lose ability to recover even 25% of the desired amount of single-copy orthogroups when the scaler becomes &gt;2.5. For smaller alphas, we are able to recover more than half of the 10,000 single-copy orthogroups for scalars &lt;5.</p>
+<p>Here the expected value is 10,000 since this is the number of genes in the starting proteome of the simulated evolution, and no gene duplications or losses are allowed. We see that only when these initial genes evolve for very little time we are able to estimate a total number of single-copy groups that approximates the desired value. As guide trees grow larger, these estimates quickly become dependent on the alpha paramter of rate variation among sites. For larger alphas, we lose ability to recover even 25% of the desired amount of single-copy orthogroups when the scaler becomes &gt;2.5. For smaller alphas, we are able to recover more than half of the <code>10,000</code> single-copy orthogroups for scalars &lt; <code>5</code>.</p>
 <p><br> <br></p>
 <p>Now let’s look at the last plot, which shows how mean orthogroup size varies among simulations:</p>
 <p><br></p>
