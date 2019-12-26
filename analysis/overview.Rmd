@@ -29,14 +29,14 @@ It is common practice in evolutionary genomics to employ simulation experiments 
 
 ## Scope of this work
 
-Here, simulation experiments are employed to assess the ability of OrthoFinder to recover single-copy genes across metazoan species. Artificial Life Framework (ALF, [ref]) is used to simulate genome evolution from 1 ancestral to 44 target genomes under a given guide tree. The 44 target genomes correspond to 44 real metazoan genomes and the guide tree represents the  phylogenetic relationships of these species.
+Here, simulation experiments are employed to assess the ability of OrthoFinder to recover single-copy genes across metazoan species. Artificial Life Framework (ALF, [1]) is used to simulate genome evolution from 1 ancestral to 44 target genomes under a given guide tree. The 44 target genomes correspond to 44 real metazoan genomes and the guide tree represents the  phylogenetic relationships of these species.
 
 Multiple simulation experiments were performed under different evolutionary scenarios. Before each repeat, all branch lengths of the guide tree was multiplied by a scalar that increased or decreased the total tree length. This means that genomes and their genes will have less or more time to evolve, and thus orthologue genes will be more or less diverged from each other.
 
 In each repeat, the starting genome comprised of 10,000 genes that evolve throughout the guide tree under the LG model exchangeabilities. Zero gene duplication and gene loss rates were specified, so each of the 44 resulting proteomes will also contain 10,000 single-copy genes. 
 Every gene from one proteome will have exactly one orthologue in each of the rest 43 proteomes, for a total of 10,000 single-copy groups of orthologues with 44 genes each.
 
-Orthofinder was applied in the simulated proteomes and the expected result was to recover 10,000 single-copy orthogroups with 44 genes each. Any deviation from this will be due to OrthoFinder's inability to correctly recover a fraction of these groups. In the end, the goal of this work is to assess OrthoFinder's performance in recovering metazoan single-copy orthologues in relation to how divergent these are from each other. This is of great interest because there are known instances of Metazoa species that evolve in faster rates than others, so their orthologue genes will be more diverged compared to slower-evolving species. Nevertheless, correctly identifying orthology relationships is critically important in the context of reconstructing the animal Tree of Life.
+Orthofinder [2] was applied in the simulated proteomes and the expected result was to recover 10,000 single-copy orthogroups with 44 genes each. Any deviation from this will be due to OrthoFinder's inability to correctly recover a fraction of these groups. In the end, the goal of this work is to assess OrthoFinder's performance in recovering metazoan single-copy orthologues in relation to how divergent these are from each other. This is of great interest because there are known instances of Metazoa species that evolve in faster rates than others, so their orthologue genes will be more diverged compared to slower-evolving species. Nevertheless, correctly identifying orthology relationships is critically important in the context of reconstructing the animal Tree of Life.
 
 ## Simulating Genome Evolution
 
@@ -90,7 +90,7 @@ theme(text                = element_text(family = 'Helvetica',color = "#4A637B",
         ,axis.title.y     = element_text(size  = 12)
         ,axis.text.x      = element_text(color = "#4A637B")
         ,axis.text.y      = element_text(color = "#4A637B")
-        ,plot.title       = element_text(size  = 14,hjust = 0 )
+        ,plot.title       = element_text(size  = 14,hjust = 0.5 )
         ,plot.subtitle    = element_text(size  =  7,hjust = 1,face = "italic")
         ,plot.caption     = element_text(size  =  7)
         ,panel.background = element_rect(fill = "white", colour = "black", size = 0.5, linetype = "solid")) +
@@ -130,7 +130,7 @@ theme(text                = element_text(family = 'Helvetica',color = "#4A637B",
         ,axis.title.y     = element_text(size  = 12)
         ,axis.text.x      = element_text(color = "#4A637B")
         ,axis.text.y      = element_text(color = "#4A637B")
-        ,plot.title       = element_text(size  = 14,hjust = 0 )
+        ,plot.title       = element_text(size  = 14,hjust = 0.5 )
         ,plot.subtitle    = element_text(size  =  7,hjust = 1,face = "italic")
         ,plot.caption     = element_text(size  =  7)
         ,panel.background = element_rect(fill = "white", colour = "black", size = 0.5, linetype = "solid")) +
@@ -175,7 +175,7 @@ theme(text                = element_text(family = 'Helvetica',color = "#4A637B",
         ,axis.title.y     = element_text(size  = 12)
         ,axis.text.x      = element_text(color = "#4A637B")
         ,axis.text.y      = element_text(color = "#4A637B")
-        ,plot.title       = element_text(size  = 14,hjust = 0 )
+        ,plot.title       = element_text(size  = 14,hjust = 0.5 )
         ,plot.subtitle    = element_text(size  =  7,hjust = 1,face = "italic")
         ,plot.caption     = element_text(size  =  7)
         ,panel.background = element_rect(fill = "white", colour = "black", size = 0.5, linetype = "solid")) +
@@ -222,7 +222,7 @@ theme(text                = element_text(family = 'Helvetica',color = "#4A637B",
         ,axis.title.y     = element_text(size  = 12)
         ,axis.text.x      = element_text(color = "#4A637B")
         ,axis.text.y      = element_text(color = "#4A637B")
-        ,plot.title       = element_text(size  = 14,hjust = 0 )
+        ,plot.title       = element_text(size  = 14,hjust = 0.5 )
         ,plot.subtitle    = element_text(size  =  7,hjust = 1,face = "italic")
         ,plot.caption     = element_text(size  =  7)
         ,panel.background = element_rect(fill = "white", colour = "black", size = 0.5, linetype = "solid")) +
@@ -259,3 +259,9 @@ More things that would be interesting to look at in the results of OrthoFinder i
 - How many orthogroups are recovered  per species and how many genes from each species stay unassigned. It would be interesting to see how OrthoFinder places genes from faster-evolving species into orthogroups compared to slower-evolving ones. Since the 44 species are directly linked to real metazoan species, we can see in which groups of animals OrthoFinder becomes more sensitive.
 
 - Apart from looking just at the mean orthogroup size of each run, it would be interesting to look at the whole distribution of orthogroup sizes, and how lumped together or fragmented they are under different simulation settings. This pattern can be directly linked to gene content phylogeny, since as orthogroups start to get more fragmented, this split might be phylogenetically informative in the context of gene presence/absence.
+
+## References
+
+[1] Dalquen DA, Anisimova M, Gonnet GH, Dessimoz C (2012) "ALF -  A simulation framework for genome evolution" *Mol Biol Evol* **29**(4):1115-1123
+
+[2] Emms DM, Kelly S (2019) "OrthoFinder: phylogenetic orthology inference for comparative genomics" *Genome Biol* **20**(1):238
