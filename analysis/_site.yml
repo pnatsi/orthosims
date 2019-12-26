@@ -1,7 +1,7 @@
 name: orthosims
 output_dir: ../docs
 navbar:
-  title: orthosims
+  title: "orthosims"
   left:
   - text: Home
     href: index.html
@@ -9,12 +9,6 @@ navbar:
     href: about.html
   - text: Overview
     href: overview.html
-  - text: License
-    href: license.html
-  right:
-  - icon: fa-github
-    text: Source code
-    href: https://github.com/pnatsi/orthosims
 output:
   workflowr::wflow_html:
     toc: yes
