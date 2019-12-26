@@ -18,29 +18,29 @@ editor_options:
 
 ## Introduction
 
-Two genes are known as orthologous if they originated during an event of speciation, where a species splitting in two 
+Two genes are said to be orthologous if they originated from their common ancestor during an event of speciation, where a species splitting in two 
 resulted in every single gene diverging in two copies. Instead, genes that their ancestry is based on a duplication event are called paralogous genes. 
 
-Identifying orthologous genes is an important step in many biological analyses, such as genome annotation, comparative genomics and phylogenomics. Specifically in phylogenomics, orthologous genes that are found in single copies (no duplication after speciation) across multiple species are necessary, because their evolutionary history can provide insights about speciation events and thus, evolutionary history of the species themselves.
+Identifying orthologous genes is an important step in many biological analyses, such as genome annotation, comparative genomics and phylogenomics. Specifically in phylogenomics, orthologous genes that are found in single copies (no duplication after speciation) across multiple species are most desired, because their evolutionary history can provide insights about speciation events and thus, evolutionary history of the species themselves.
 
-Inferring orthology relationships among genes is not a trivial task. Various orthology inference methods have been developed, mostly involving sequence similarity and clustering. Furthermore, the accuracy of an orthology analysis is hard to assess because no ground truth can be known about the evolutionary history of genes.
+Inferring orthology relationships among genes is not a trivial task. Various orthology inference methods have been developed, mostly involving sequence similarity and clustering. The accuracy of an orthology analysis is hard to assess because no ground truth can be known about the evolutionary history of genes.
 
 It is common practice in evolutionary genomics to employ simulation experiments in order to verify and benchmark newly developed methods. In a simulation framework, sequences can evolve under a user-specified model where every parameter is known and controlled, and all required information can be recorded. Even if models are oversimplifying the true evolutionary events, simulations are often a valuable tool to understand the behaviour of new models and algorithms.
 
 ## Scope of this work
 
-Here, simulation experiments are employed to assess the ability of OrthoFinder to recover single-copy genes across metazoan species. Artificial Life Framework (ALF, [1]) is used to simulate genome evolution from 1 ancestral to 44 target genomes under a given guide tree. The 44 target genomes correspond to 44 real metazoan genomes and the guide tree represents the  phylogenetic relationships of these species.
+Here, simulation experiments are employed to assess the ability of OrthoFinder [1] to recover single-copy genes across metazoan species. Artificial Life Framework (ALF, [2]) is used to simulate genome evolution from 1 ancestral to 44 target genomes under a given guide tree. The 44 target genomes correspond to 44 real metazoan genomes and the guide tree represents the  phylogenetic relationships of these animal species.
 
-Multiple simulation experiments were performed under different evolutionary scenarios. Before each repeat, all branch lengths of the guide tree was multiplied by a scalar that increased or decreased the total tree length. This means that genomes and their genes will have less or more time to evolve, and thus orthologue genes will be more or less diverged from each other.
+Multiple simulation experiments were performed under different evolutionary scenarios. Before each repeat, all branch lengths of the guide tree were multiplied by a *scalar* that increased or decreased the total tree length. This means that genomes and their genes will have less or more time to evolve, and thus orthologue genes will be more or less diverged from each other. In addition, in every simulation repeat a different *alpha* parameter for rate variation among sites was provided. This means that different sites of genes will accumulate mutations in different rates, determined by a gamma distribution with the given alpha parameter.
 
-In each repeat, the starting genome comprised of 10,000 genes that evolve throughout the guide tree under the LG model exchangeabilities. Zero gene duplication and gene loss rates were specified, so each of the 44 resulting proteomes will also contain 10,000 single-copy genes. 
+In each repeat, the starting genome comprised of 10,000 genes that evolved throughout the guide tree under the LG model exchangeabilities. Zero gene duplication and gene loss rates were specified, so each of the 44 resulting proteomes will also contain 10,000 single-copy genes. 
 Every gene from one proteome will have exactly one orthologue in each of the rest 43 proteomes, for a total of 10,000 single-copy groups of orthologues with 44 genes each.
 
-Orthofinder [2] was applied in the simulated proteomes and the expected result was to recover 10,000 single-copy orthogroups with 44 genes each. Any deviation from this will be due to OrthoFinder's inability to correctly recover a fraction of these groups. In the end, the goal of this work is to assess OrthoFinder's performance in recovering metazoan single-copy orthologues in relation to how divergent these are from each other. This is of great interest because there are known instances of Metazoa species that evolve in faster rates than others, so their orthologue genes will be more diverged compared to slower-evolving species. Nevertheless, correctly identifying orthology relationships is critically important in the context of reconstructing the animal Tree of Life.
+Orthofinder was applied in the simulated proteomes and the expected result was to recover 10,000 single-copy orthogroups with 44 genes each. Any deviation from this will be due to OrthoFinder's inability to correctly recover a fraction of these groups. In the end, the goal of this work is to assess OrthoFinder's performance in recovering metazoan single-copy orthologues in relation to how divergent these are from each other. This is of great interest because there are known instances of Metazoa species that evolve in faster rates than others, so their orthologue genes will be more diverged compared to slower-evolving species. Nevertheless, correctly identifying orthology relationships is critically important in the context of reconstructing the animal Tree of Life.
 
 ## Simulating Genome Evolution
 
-Evolution from one ancestral to 44 terminal proteomes under a given guide tree was simulated using ALF. Different simulation experiments were performed under 200 different evolutionary scenarios, each time resulting in 44 proteomes with 10,000 genes each. In each of the 200 repeats, the guide tree was down- or up-scaled to allow for less or more evolutionary time, and also a different parameter for rate variation among sites (alpha) was given. 
+Evolution from one ancestral to 44 terminal proteomes under a given guide tree was simulated using ALF. Different simulation experiments were performed under 200 evolutionary scenarios, each time resulting in 44 proteomes with 10,000 genes each. In each of the 200 repeats, the guide tree was down- or up-scaled to allow for less or more evolutionary time, and also a different parameter for rate variation among sites (alpha) was given. 
 
 OrthoFinder was applied to each of the 200 44-proteome simulated datasets and various result metrics were recorded, such as the total number of resulting orthogroups, the number of genes not assigned to any orthogroup, the mean orthogroups size etc. The results are summarised in the following dataframe:
 
@@ -258,20 +258,17 @@ Again the trend is clear. Here, the expected value is 44, equal to the number of
 
 ## Verdict and next steps
 
-It is clear that when genes become divergent, either because they evolve fast or because they evolve for more time, OrthoFinder becomes less and less able to correctly recover our 10,000 44-species single-copy orthogroups. Even though the data used come from simulations which oversimplifies true events, the remarks will most likely hold for real data as well. Events such as gene duplication, gene loss, horizontal gene transfer, incomplete lineage sorting etc. complicate the evolutionary process and make the accurate inference of single-copy orthogroups much more than in the "ideal" simulation environment. 
-
-
+It is clear that when orthologous genes become too diverge, either because they evolve faster or because they evolve for more time, OrthoFinder becomes less and less able to correctly recover our 10,000 44-species single-copy orthogroups. Even though the data used come from simulations which oversimplifies true events, the remarks made will most likely hold for real data as well. Events such as gene duplication, gene loss, horizontal gene transfer, incomplete lineage sorting etc. complicate the real evolutionary process and make the accurate inference of single-copy orthogroups much more than in the "ideal" simulation environment. 
 
 More things that would be interesting to look at in the results of OrthoFinder in simulated proteomes are:
 
-
-
-- How many orthogroups are recovered  per species and how many genes from each species stay unassigned. It would be interesting to see how OrthoFinder places genes from faster-evolving species into orthogroups compared to slower-evolving ones. Since the 44 species are directly linked to real metazoan species, we can see in which groups of animals OrthoFinder becomes more sensitive.
+- How many orthogroups are recovered  per species and how many genes from each species stay unassigned. It would be interesting to see how OrthoFinder deals with genes from faster-evolving species compared to slower-evolving ones. Since the 44 simulated species are directly linked to real metazoan species, we can see in which groups of animals OrthoFinder becomes more sensitive.
 
 - Apart from looking just at the mean orthogroup size of each run, it would be interesting to look at the whole distribution of orthogroup sizes, and how lumped together or fragmented they are under different simulation settings. This pattern can be directly linked to gene content phylogeny, since as orthogroups start to get more fragmented, this split might be phylogenetically informative in the context of gene presence/absence.
 
 ## References
 
-[1] Dalquen DA, Anisimova M, Gonnet GH, Dessimoz C (2012) "ALF -  A simulation framework for genome evolution" *Mol Biol Evol* **29**(4):1115-1123
+[1] Emms DM, Kelly S (2019) "OrthoFinder: phylogenetic orthology inference for comparative genomics" *Genome Biol* **20**(1):238
 
-[2] Emms DM, Kelly S (2019) "OrthoFinder: phylogenetic orthology inference for comparative genomics" *Genome Biol* **20**(1):238
+[2] Dalquen DA, Anisimova M, Gonnet GH, Dessimoz C (2012) "ALF -  A simulation framework for genome evolution" *Mol Biol Evol* **29**(4):1115-1123
+
