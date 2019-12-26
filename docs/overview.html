@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="" />
+
+
+<title>Orthology inference is unable to recover fast-evolving, metazoan single-copy orthologs (and why this is good)</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<script src="site_libs/navigation-1.1/sourceembed.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+#rmd-source-code {
+  display: none;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">orthosims</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="overview.html">Overview</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+<li role="separator" class="divider"></li>
+<li><a id="rmd-download-source" href="#">Download Rmd</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Orthology inference is unable to recover fast-evolving, metazoan single-copy orthologs (and why this is good)</h1>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2019-12-26
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>orthosims/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.0). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20191226code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20191226)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20191226code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20191226)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcompnatsiorthosimstreef7cd9004bc2dd568341aec0671fb44aa9897509ftargetblankf7cd900a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/pnatsi/orthosims/tree/f7cd9004bc2dd568341aec0671fb44aa9897509f" target="_blank">f7cd900</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcompnatsiorthosimstreef7cd9004bc2dd568341aec0671fb44aa9897509ftargetblankf7cd900a" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+working directory clean
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the R Markdown and HTML files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view them.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/pnatsi/orthosims/blob/f7cd9004bc2dd568341aec0671fb44aa9897509f/analysis/overview.Rmd" target="_blank">f7cd900</a>
+</td>
+<td>
+pnatsi
+</td>
+<td>
+2019-12-26
+</td>
+<td>
+Cleans repo from artefacts
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/pnatsi/orthosims/f7cd9004bc2dd568341aec0671fb44aa9897509f/docs/overview.html" target="_blank">f7cd900</a>
+</td>
+<td>
+pnatsi
+</td>
+<td>
+2019-12-26
+</td>
+<td>
+Cleans repo from artefacts
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/pnatsi/orthosims/2ae9d155c90e68f8ffc6e7a5cfa6cc8e3098b7d2/docs/overview.html" target="_blank">2ae9d15</a>
+</td>
+<td>
+pnatsi
+</td>
+<td>
+2019-12-26
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/pnatsi/orthosims/blob/ddd270ebb1aa6360ae2d9c015f317318e5f9e48c/analysis/overview.Rmd" target="_blank">ddd270e</a>
+</td>
+<td>
+pnatsi
+</td>
+<td>
+2019-12-26
+</td>
+<td>
+Adds worfklowr yaml header to overview.Rmd
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/pnatsi/orthosims/e1b3acc27214670166d749cd3ef7239d57a0af38/docs/overview.html" target="_blank">e1b3acc</a>
+</td>
+<td>
+pnatsi
+</td>
+<td>
+2019-12-26
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/pnatsi/orthosims/blob/add35cbc94f9ee24377474817386db8e8beb7b2a/analysis/overview.Rmd" target="_blank">add35cb</a>
+</td>
+<td>
+pnatsi
+</td>
+<td>
+2019-12-26
+</td>
+<td>
+Renames report.Rmd to overview.Rmd
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>Two genes are known as orthologous if they originated during an event of speciation, where a species splitting in two resulted in every single gene diverging in two copies. Instead, genes that their ancestry is based on a duplication event are called paralogous genes.</p>
+<p>Identifying orthologous genes is an important step in many biological analyses, such as genome annotation, comparative genomics and phylogenomics. Specifically in phylogenomics, orthologous genes that are found in single copies (no duplication after speciation) across multiple species are necessary, because their evolutionary history can provide insights about speciation events and thus, evolutionary history of the species themselves.</p>
+<p>Inferring orthology relationships among genes is not a trivial task. Various orthology inference methods have been developed, mostly involving sequence similarity and clustering. Furthermore, the accuracy of an orthology analysis is hard to assess because no ground truth can be known about the evolutionary history of genes.</p>
+<p>It is common practice in evolutionary genomics to employ simulation experiments in order to verify and benchmark newly developed methods. In a simulation framework, sequences can evolve under a user-specified model where every parameter is known and controlled, and all required information can be recorded. Even if models are oversimplifying the true evolutionary events, simulations are often a valuable tool to understand the behaviour of new models and algorithms.</p>
+</div>
+<div id="scope-of-this-work" class="section level2">
+<h2>Scope of this work</h2>
+<p>Here, simulation experiments are employed to assess the ability of OrthoFinder to recover single-copy genes across metazoan species. Artificial Life Framework (ALF, [ref]) is used to simulate genome evolution from 1 ancestral to 44 target genomes under a given guide tree. The 44 target genomes correspond to 44 real metazoan genomes and the guide tree represents the phylogenetic relationships of these species.</p>
+<p>Multiple simulation experiments were performed under different evolutionary scenarios. Before each repeat, all branch lengths of the guide tree was multiplied by a scalar that increased or decreased the total tree length. This means that genomes and their genes will have less or more time to evolve, and thus orthologue genes will be more or less diverged from each other.</p>
+<p>In each repeat, the starting genome comprised of 10,000 genes that evolve throughout the guide tree under the LG model exchangeabilities. Zero gene duplication and gene loss rates were specified, so each of the 44 resulting proteomes will also contain 10,000 single-copy genes. Every gene from one proteome will have exactly one orthologue in each of the rest 43 proteomes, for a total of 10,000 single-copy groups of orthologues with 44 genes each.</p>
+<p>Orthofinder was applied in the simulated proteomes and the expected result was to recover 10,000 single-copy orthogroups with 44 genes each. Any deviation from this will be due to OrthoFinder’s inability to correctly recover a fraction of these groups. In the end, the goal of this work is to assess OrthoFinder’s performance in recovering metazoan single-copy orthologues in relation to how divergent these are from each other. This is of great interest because there are known instances of Metazoa species that evolve in faster rates than others, so their orthologue genes will be more diverged compared to slower-evolving species. Nevertheless, correctly identifying orthology relationships is critically important in the context of reconstructing the animal Tree of Life.</p>
+</div>
+<div id="simulating-genome-evolution" class="section level2">
+<h2>Simulating Genome Evolution</h2>
+<p>Evolution from one ancestral to 44 terminal proteomes under a given guide tree was simulated using ALF. Different simulation experiments were performed under 200 different evolutionary scenarios, each time resulting in 44 proteomes with 10,000 genes each. In each of the 200 repeats, the guide tree was down- or up-scaled to allow for less or more evolutionary time, and also a different parameter for rate variation among sites (alpha) was given.</p>
+<p>OrthoFinder was applied to each of the 200 44-proteome simulated datasets and various result metrics were recorded, such as the total number of resulting orthogroups, the number of genes not assigned to any orthogroup, the mean orthogroups size etc. The results are summarised in the following dataframe:</p>
+<pre class="r"><code>ortho_results &lt;- data.table::fread(&quot;data/orthosims_stats.csv&quot;)
+head(ortho_results)</code></pre>
+<pre><code>   SimID     alpha scalar orthogroups all_species_single_copy unassigned_genes
+1:     1 0.7654031 0.0616       10001                    9998                0
+2:     2 1.0686580 0.1583       10001                    9991                1
+3:     3 1.2116030 0.1931       10001                    9991                3
+4:     4 0.8303773 0.2230       10001                    9995                2
+5:     5 0.6696246 0.2734       10002                    9990                3
+6:     6 0.4422281 0.3065       10001                    9995                3
+   percentage_unassigned mean_orthogroup_size median_orthogroup_size
+1:                     0                   44                     44
+2:                     0                   44                     44
+3:                     0                   44                     44
+4:                     0                   44                     44
+5:                     0                   44                     44
+6:                     0                   44                     44</code></pre>
+<p>There are 9 columns in this matrix:</p>
+<ul>
+<li><strong>SimID</strong> the unique ID of each simulation experiment</li>
+<li><strong>alpha</strong> the alpha parameter for rate variation among sites used in each simulation</li>
+<li><strong>scalar</strong> the number with which all branch lengths of the guide were multiplied to increase/decrease evolution time during the simulation</li>
+<li><strong>orthogroups</strong> how many orthogroups were retained by OrthoFinder from the simulated proteomes (expected 10,000)</li>
+<li><strong>all_species_single_copy</strong> how many of the recovered orthogroups contained exactly one gene from all 44 species (expected 10,000)</li>
+<li><strong>unassigned_genes</strong> how many of the 440,000 input genes (44 * 10,000) were not assigned by OrthoFinder to any of the resulting orthogroups (expected 0)</li>
+<li><strong>percentage_unassigned</strong> proportion of the unassigned genes (unassigned_genes / 440,000)</li>
+<li><strong>mean_orthogroup_size</strong> the average number of genes contained in one orthogroup (expected 44)</li>
+<li><strong>median_orthogroup_size</strong> half of the orthogroups have this number of genes or more, and half of the orthogroups have this number of genes or fewer (expected 44)</li>
+</ul>
+<p><br></p>
+<p>In the controlled environment of simulations, various aspects of the evolutionary process that are not known in real world can be recorded. This knowledge provides a basis on which the accuracy of methods, algorithms and software can be assessed. In our example, the “true” result of the evolution is 10,000 single-copy groups of orthologues, contaning 44 genes each. We can assess OrthoFinder’s accuracy under different simulation settings by comparing the resulting orthogroups to this expected result.</p>
+<p><br></p>
+<p>Let’s see first how much the number of estimated orthogroups deviated from the expected 10,000 under different combinations of guide tree length and alpha parameter for rate variation among sites:</p>
+<p><br></p>
+<pre><code></code></pre>
+<p><br></p>
+<p>This plot can be divided in three regions, in respect to the scalar that guide tree length is multiplied before simulation. For scalars &lt;2 the number of inferred orhtogroups does not deviate much from 10,000 regardless of the alpha value. For scalars between 2-5 there is much variance between results for the same scalar, depending on the value of the alpha paramaters. Larger alphas lead to greater number of orthogroups for the same scalar. However, the estimated number of orthogroups never goes beyond 85,000. For scalars &gt;5 the results become mixed. As it can be seen in the bottom-right part of the scatterplot, large scalars and large alphas can drop the estimated number of orthogroups closer to 10,000. What does this mean? Let’s see the number of unassigned genes plot to help us understand what is going on:</p>
+<p><br></p>
+<pre><code></code></pre>
+<p><br> <br></p>
+<p>Here the trend becomes clearer. For shorter guide trees almost all genes are assigned to some orthogroup but as the guide tree become larger, the number of unassigned genes is analogous to the alpha parameter. For the same guide tree length, larger alpha leads to more genes not placed in any orthogroup, probably because they evolved faster than their orthologues and became so diverged that their relationship could not be recognised by OrthoFinder anymore. We can see now that for large guide trees and large alphas (top-right corner), almost 400,000 of the 440,000 genes were left without an orthogroup. So, the small number of orthogroups that was observed in the previous plot for this setting was seen because the majority of the input genes were too distant from each other to be placed in an orthogroup.</p>
+<p><br></p>
+<p>Another interesting thing to look at is how many of the recovered orthogroups are all-species single-copy:</p>
+<p><br></p>
+<pre><code></code></pre>
+<p><br></p>
+<p>Here the expected value is 10,000 since this is the number of genes in the starting proteome of the simulated evolution, and no gene duplications or losses are allowed. We see that only when these initial genes evolve for very little time we are able to estimate a total number of single-copy groups that approximates the desired value. As guide trees grow larger, these estimates quickly become dependent on the alpha paramter of rate variation among sites. For larger alphas, we lose ability to recover even 25% of the desired amount of single-copy orthogroups when the scaler becomes &gt;2.5. For smaller alphas, we are able to recover more than half of the <code>10,000</code> single-copy orthogroups for scalars &lt; <code>5</code>.</p>
+<p><br> <br></p>
+<p>Now let’s look at the last plot, which shows how mean orthogroup size varies among simulations:</p>
+<p><br></p>
+<pre><code></code></pre>
+<p><br></p>
+<p>Again the trend is clear. Here, the expected value is 44, equal to the number of species used in the simulations. In smaller scalars, the mean size of each orthogroup is very close to 44. As guide trees become longer, the mean orthogroup size depends highly on the value of the alpha parameter, until we get to scalars &gt;8 where mean sizes are &lt;5 no matter the value of alpha.</p>
+<p><br> <br></p>
+</div>
+<div id="verdict-and-next-steps" class="section level2">
+<h2>Verdict and next steps</h2>
+<p>It is clear that when genes become divergent, either because they evolve fast or because they evolve for more time, OrthoFinder becomes less and less able to correctly recover our 10,000 44-species single-copy orthogroups. Even though the data used come from simulations which oversimplifies true events, the remarks will most likely hold for real data as well. Events such as gene duplication, gene loss, horizontal gene transfer, incomplete lineage sorting etc. complicate the evolutionary process and make the accurate inference of single-copy orthogroups much more than in the “ideal” simulation environment.</p>
+<p><br></p>
+<p>More things that would be interesting to look at in the results of OrthoFinder in simulated proteomes are: <br></p>
+<ul>
+<li><p>How many orthogroups are recovered per species and how many genes from each species stay unassigned. It would be interesting to see how OrthoFinder places genes from faster-evolving species into orthogroups compared to slower-evolving ones. Since the 44 species are directly linked to real metazoan species, we can see in which groups of animals OrthoFinder becomes more sensitive.</p></li>
+<li><p>Apart from looking just at the mean orthogroup size of each run, it would be interesting to look at the whole distribution of orthogroup sizes, and how lumped together or fragmented they are under different simulation settings. This pattern can be directly linked to gene content phylogeny, since as orthogroups start to get more fragmented, this split might be phylogenetically informative in the context of gene presence/absence.</p></li>
+</ul>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.6.0 (2019-04-26)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: Ubuntu 16.04.6 LTS
+
+Matrix products: default
+BLAS:   /usr/lib/atlas-base/atlas/libblas.so.3.0
+LAPACK: /usr/lib/atlas-base/atlas/liblapack.so.3.0
+
+locale:
+ [1] LC_CTYPE=C.UTF-8       LC_NUMERIC=C           LC_TIME=C.UTF-8       
+ [4] LC_COLLATE=C.UTF-8     LC_MONETARY=C.UTF-8    LC_MESSAGES=C.UTF-8   
+ [7] LC_PAPER=C.UTF-8       LC_NAME=C              LC_ADDRESS=C          
+[10] LC_TELEPHONE=C         LC_MEASUREMENT=C.UTF-8 LC_IDENTIFICATION=C   
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] workflowr_1.6.0
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_1.0.3        rprojroot_1.3-2   digest_0.6.23     later_1.0.0      
+ [5] R6_2.4.1          backports_1.1.5   git2r_0.26.1      magrittr_1.5     
+ [9] evaluate_0.14     stringi_1.4.3     rlang_0.4.2       data.table_1.12.8
+[13] fs_1.3.1          promises_1.1.0    whisker_0.4       rmarkdown_2.0    
+[17] tools_3.6.0       stringr_1.4.0     glue_1.3.1        httpuv_1.5.2     
+[21] xfun_0.11         yaml_2.2.0        compiler_3.6.0    base64enc_0.1-3  
+[25] htmltools_0.4.0   knitr_1.26       </code></pre>
+</div>
+</div>
+
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiT3J0aG9sb2d5IGluZmVyZW5jZSBpcyB1bmFibGUgdG8gcmVjb3ZlciBmYXN0LWV2b2x2aW5nLCBtZXRhem9hbiBzaW5nbGUtY29weSBvcnRob2xvZ3MgKGFuZCB3aHkgdGhpcyBpcyBnb29kKSIKYXV0aG9yOiAiIgpvdXRwdXQ6IAogIHdvcmtmbG93cjo6d2Zsb3dfaHRtbDoKICAgIGNvZGVfZm9sZGluZzogaGlkZQogICAgY29kZV9kb3dubG9hZDogdHJ1ZQogICAgdG9jOiB0cnVlICAgICAgICAgICAgICAgICAgIyB0YWJsZSBvZiBjb250ZW50IHRydWUKICAgIHRvY19kZXB0aDogMyAgICAgICAgICAgICAgICMgdXB0byB0aHJlZSBkZXB0aHMgb2YgaGVhZGluZ3MgKHNwZWNpZmllZCBieSAjLCAjIyBhbmQgIyMjKQogICAgdG9jX2Zsb2F0OiB0cnVlCiAgICBudW1iZXJfc2VjdGlvbnM6IGZhbHNlICAgICAjIGlmIHlvdSB3YW50IG51bWJlciBzZWN0aW9ucyBhdCBlYWNoIHRhYmxlIGhlYWRlcgogICAgdGhlbWU6IGNvc21vICAgICAgICAgICAgICAjIG1hbnkgb3B0aW9ucyBmb3IgdGhlbWUsIHRoaXMgb25lIGlzIG15IGZhdm9yaXRlLgogICAgaGlnaGxpZ2h0OiB0ZXh0bWF0ZSAgICAgICAgICAgIyBzcGVjaWZpZXMgdGhlIHN5bnRheCBoaWdobGlnaHRpbmcgc3R5bGUKZWRpdG9yX29wdGlvbnM6CiAgY2h1bmtfb3V0cHV0X3R5cGU6IGNvbnNvbGUKLS0tCgojIyBJbnRyb2R1Y3Rpb24KClR3byBnZW5lcyBhcmUga25vd24gYXMgb3J0aG9sb2dvdXMgaWYgdGhleSBvcmlnaW5hdGVkIGR1cmluZyBhbiBldmVudCBvZiBzcGVjaWF0aW9uLCB3aGVyZSBhIHNwZWNpZXMgc3BsaXR0aW5nIGluIHR3byAKcmVzdWx0ZWQgaW4gZXZlcnkgc2luZ2xlIGdlbmUgZGl2ZXJnaW5nIGluIHR3byBjb3BpZXMuIEluc3RlYWQsIGdlbmVzIHRoYXQgdGhlaXIgYW5jZXN0cnkgaXMgYmFzZWQgb24gYSBkdXBsaWNhdGlvbiBldmVudCBhcmUgY2FsbGVkIHBhcmFsb2dvdXMgZ2VuZXMuIAoKSWRlbnRpZnlpbmcgb3J0aG9sb2dvdXMgZ2VuZXMgaXMgYW4gaW1wb3J0YW50IHN0ZXAgaW4gbWFueSBiaW9sb2dpY2FsIGFuYWx5c2VzLCBzdWNoIGFzIGdlbm9tZSBhbm5vdGF0aW9uLCBjb21wYXJhdGl2ZSBnZW5vbWljcyBhbmQgcGh5bG9nZW5vbWljcy4gU3BlY2lmaWNhbGx5IGluIHBoeWxvZ2Vub21pY3MsIG9ydGhvbG9nb3VzIGdlbmVzIHRoYXQgYXJlIGZvdW5kIGluIHNpbmdsZSBjb3BpZXMgKG5vIGR1cGxpY2F0aW9uIGFmdGVyIHNwZWNpYXRpb24pIGFjcm9zcyBtdWx0aXBsZSBzcGVjaWVzIGFyZSBuZWNlc3NhcnksIGJlY2F1c2UgdGhlaXIgZXZvbHV0aW9uYXJ5IGhpc3RvcnkgY2FuIHByb3ZpZGUgaW5zaWdodHMgYWJvdXQgc3BlY2lhdGlvbiBldmVudHMgYW5kIHRodXMsIGV2b2x1dGlvbmFyeSBoaXN0b3J5IG9mIHRoZSBzcGVjaWVzIHRoZW1zZWx2ZXMuCgpJbmZlcnJpbmcgb3J0aG9sb2d5IHJlbGF0aW9uc2hpcHMgYW1vbmcgZ2VuZXMgaXMgbm90IGEgdHJpdmlhbCB0YXNrLiBWYXJpb3VzIG9ydGhvbG9neSBpbmZlcmVuY2UgbWV0aG9kcyBoYXZlIGJlZW4gZGV2ZWxvcGVkLCBtb3N0bHkgaW52b2x2aW5nIHNlcXVlbmNlIHNpbWlsYXJpdHkgYW5kIGNsdXN0ZXJpbmcuIEZ1cnRoZXJtb3JlLCB0aGUgYWNjdXJhY3kgb2YgYW4gb3J0aG9sb2d5IGFuYWx5c2lzIGlzIGhhcmQgdG8gYXNzZXNzIGJlY2F1c2Ugbm8gZ3JvdW5kIHRydXRoIGNhbiBiZSBrbm93biBhYm91dCB0aGUgZXZvbHV0aW9uYXJ5IGhpc3Rvcnkgb2YgZ2VuZXMuCgpJdCBpcyBjb21tb24gcHJhY3RpY2UgaW4gZXZvbHV0aW9uYXJ5IGdlbm9taWNzIHRvIGVtcGxveSBzaW11bGF0aW9uIGV4cGVyaW1lbnRzIGluIG9yZGVyIHRvIHZlcmlmeSBhbmQgYmVuY2htYXJrIG5ld2x5IGRldmVsb3BlZCBtZXRob2RzLiBJbiBhIHNpbXVsYXRpb24gZnJhbWV3b3JrLCBzZXF1ZW5jZXMgY2FuIGV2b2x2ZSB1bmRlciBhIHVzZXItc3BlY2lmaWVkIG1vZGVsIHdoZXJlIGV2ZXJ5IHBhcmFtZXRlciBpcyBrbm93biBhbmQgY29udHJvbGxlZCwgYW5kIGFsbCByZXF1aXJlZCBpbmZvcm1hdGlvbiBjYW4gYmUgcmVjb3JkZWQuIEV2ZW4gaWYgbW9kZWxzIGFyZSBvdmVyc2ltcGxpZnlpbmcgdGhlIHRydWUgZXZvbHV0aW9uYXJ5IGV2ZW50cywgc2ltdWxhdGlvbnMgYXJlIG9mdGVuIGEgdmFsdWFibGUgdG9vbCB0byB1bmRlcnN0YW5kIHRoZSBiZWhhdmlvdXIgb2YgbmV3IG1vZGVscyBhbmQgYWxnb3JpdGhtcy4KCiMjIFNjb3BlIG9mIHRoaXMgd29yawoKSGVyZSwgc2ltdWxhdGlvbiBleHBlcmltZW50cyBhcmUgZW1wbG95ZWQgdG8gYXNzZXNzIHRoZSBhYmlsaXR5IG9mIE9ydGhvRmluZGVyIHRvIHJlY292ZXIgc2luZ2xlLWNvcHkgZ2VuZXMgYWNyb3NzIG1ldGF6b2FuIHNwZWNpZXMuIEFydGlmaWNpYWwgTGlmZSBGcmFtZXdvcmsgKEFMRiwgW3JlZl0pIGlzIHVzZWQgdG8gc2ltdWxhdGUgZ2Vub21lIGV2b2x1dGlvbiBmcm9tIDEgYW5jZXN0cmFsIHRvIDQ0IHRhcmdldCBnZW5vbWVzIHVuZGVyIGEgZ2l2ZW4gZ3VpZGUgdHJlZS4gVGhlIDQ0IHRhcmdldCBnZW5vbWVzIGNvcnJlc3BvbmQgdG8gNDQgcmVhbCBtZXRhem9hbiBnZW5vbWVzIGFuZCB0aGUgZ3VpZGUgdHJlZSByZXByZXNlbnRzIHRoZSAgcGh5bG9nZW5ldGljIHJlbGF0aW9uc2hpcHMgb2YgdGhlc2Ugc3BlY2llcy4KCk11bHRpcGxlIHNpbXVsYXRpb24gZXhwZXJpbWVudHMgd2VyZSBwZXJmb3JtZWQgdW5kZXIgZGlmZmVyZW50IGV2b2x1dGlvbmFyeSBzY2VuYXJpb3MuIEJlZm9yZSBlYWNoIHJlcGVhdCwgYWxsIGJyYW5jaCBsZW5ndGhzIG9mIHRoZSBndWlkZSB0cmVlIHdhcyBtdWx0aXBsaWVkIGJ5IGEgc2NhbGFyIHRoYXQgaW5jcmVhc2VkIG9yIGRlY3JlYXNlZCB0aGUgdG90YWwgdHJlZSBsZW5ndGguIFRoaXMgbWVhbnMgdGhhdCBnZW5vbWVzIGFuZCB0aGVpciBnZW5lcyB3aWxsIGhhdmUgbGVzcyBvciBtb3JlIHRpbWUgdG8gZXZvbHZlLCBhbmQgdGh1cyBvcnRob2xvZ3VlIGdlbmVzIHdpbGwgYmUgbW9yZSBvciBsZXNzIGRpdmVyZ2VkIGZyb20gZWFjaCBvdGhlci4KCkluIGVhY2ggcmVwZWF0LCB0aGUgc3RhcnRpbmcgZ2Vub21lIGNvbXByaXNlZCBvZiAxMCwwMDAgZ2VuZXMgdGhhdCBldm9sdmUgdGhyb3VnaG91dCB0aGUgZ3VpZGUgdHJlZSB1bmRlciB0aGUgTEcgbW9kZWwgZXhjaGFuZ2VhYmlsaXRpZXMuIFplcm8gZ2VuZSBkdXBsaWNhdGlvbiBhbmQgZ2VuZSBsb3NzIHJhdGVzIHdlcmUgc3BlY2lmaWVkLCBzbyBlYWNoIG9mIHRoZSA0NCByZXN1bHRpbmcgcHJvdGVvbWVzIHdpbGwgYWxzbyBjb250YWluIDEwLDAwMCBzaW5nbGUtY29weSBnZW5lcy4gCkV2ZXJ5IGdlbmUgZnJvbSBvbmUgcHJvdGVvbWUgd2lsbCBoYXZlIGV4YWN0bHkgb25lIG9ydGhvbG9ndWUgaW4gZWFjaCBvZiB0aGUgcmVzdCA0MyBwcm90ZW9tZXMsIGZvciBhIHRvdGFsIG9mIDEwLDAwMCBzaW5nbGUtY29weSBncm91cHMgb2Ygb3J0aG9sb2d1ZXMgd2l0aCA0NCBnZW5lcyBlYWNoLgoKT3J0aG9maW5kZXIgd2FzIGFwcGxpZWQgaW4gdGhlIHNpbXVsYXRlZCBwcm90ZW9tZXMgYW5kIHRoZSBleHBlY3RlZCByZXN1bHQgd2FzIHRvIHJlY292ZXIgMTAsMDAwIHNpbmdsZS1jb3B5IG9ydGhvZ3JvdXBzIHdpdGggNDQgZ2VuZXMgZWFjaC4gQW55IGRldmlhdGlvbiBmcm9tIHRoaXMgd2lsbCBiZSBkdWUgdG8gT3J0aG9GaW5kZXIncyBpbmFiaWxpdHkgdG8gY29ycmVjdGx5IHJlY292ZXIgYSBmcmFjdGlvbiBvZiB0aGVzZSBncm91cHMuIEluIHRoZSBlbmQsIHRoZSBnb2FsIG9mIHRoaXMgd29yayBpcyB0byBhc3Nlc3MgT3J0aG9GaW5kZXIncyBwZXJmb3JtYW5jZSBpbiByZWNvdmVyaW5nIG1ldGF6b2FuIHNpbmdsZS1jb3B5IG9ydGhvbG9ndWVzIGluIHJlbGF0aW9uIHRvIGhvdyBkaXZlcmdlbnQgdGhlc2UgYXJlIGZyb20gZWFjaCBvdGhlci4gVGhpcyBpcyBvZiBncmVhdCBpbnRlcmVzdCBiZWNhdXNlIHRoZXJlIGFyZSBrbm93biBpbnN0YW5jZXMgb2YgTWV0YXpvYSBzcGVjaWVzIHRoYXQgZXZvbHZlIGluIGZhc3RlciByYXRlcyB0aGFuIG90aGVycywgc28gdGhlaXIgb3J0aG9sb2d1ZSBnZW5lcyB3aWxsIGJlIG1vcmUgZGl2ZXJnZWQgY29tcGFyZWQgdG8gc2xvd2VyLWV2b2x2aW5nIHNwZWNpZXMuIE5ldmVydGhlbGVzcywgY29ycmVjdGx5IGlkZW50aWZ5aW5nIG9ydGhvbG9neSByZWxhdGlvbnNoaXBzIGlzIGNyaXRpY2FsbHkgaW1wb3J0YW50IGluIHRoZSBjb250ZXh0IG9mIHJlY29uc3RydWN0aW5nIHRoZSBhbmltYWwgVHJlZSBvZiBMaWZlLgoKIyMgU2ltdWxhdGluZyBHZW5vbWUgRXZvbHV0aW9uCgpFdm9sdXRpb24gZnJvbSBvbmUgYW5jZXN0cmFsIHRvIDQ0IHRlcm1pbmFsIHByb3Rlb21lcyB1bmRlciBhIGdpdmVuIGd1aWRlIHRyZWUgd2FzIHNpbXVsYXRlZCB1c2luZyBBTEYuIERpZmZlcmVudCBzaW11bGF0aW9uIGV4cGVyaW1lbnRzIHdlcmUgcGVyZm9ybWVkIHVuZGVyIDIwMCBkaWZmZXJlbnQgZXZvbHV0aW9uYXJ5IHNjZW5hcmlvcywgZWFjaCB0aW1lIHJlc3VsdGluZyBpbiA0NCBwcm90ZW9tZXMgd2l0aCAxMCwwMDAgZ2VuZXMgZWFjaC4gSW4gZWFjaCBvZiB0aGUgMjAwIHJlcGVhdHMsIHRoZSBndWlkZSB0cmVlIHdhcyBkb3duLSBvciB1cC1zY2FsZWQgdG8gYWxsb3cgZm9yIGxlc3Mgb3IgbW9yZSBldm9sdXRpb25hcnkgdGltZSwgYW5kIGFsc28gYSBkaWZmZXJlbnQgcGFyYW1ldGVyIGZvciByYXRlIHZhcmlhdGlvbiBhbW9uZyBzaXRlcyAoYWxwaGEpIHdhcyBnaXZlbi4gCgpPcnRob0ZpbmRlciB3YXMgYXBwbGllZCB0byBlYWNoIG9mIHRoZSAyMDAgNDQtcHJvdGVvbWUgc2ltdWxhdGVkIGRhdGFzZXRzIGFuZCB2YXJpb3VzIHJlc3VsdCBtZXRyaWNzIHdlcmUgcmVjb3JkZWQsIHN1Y2ggYXMgdGhlIHRvdGFsIG51bWJlciBvZiByZXN1bHRpbmcgb3J0aG9ncm91cHMsIHRoZSBudW1iZXIgb2YgZ2VuZXMgbm90IGFzc2lnbmVkIHRvIGFueSBvcnRob2dyb3VwLCB0aGUgbWVhbiBvcnRob2dyb3VwcyBzaXplIGV0Yy4gVGhlIHJlc3VsdHMgYXJlIHN1bW1hcmlzZWQgaW4gdGhlIGZvbGxvd2luZyBkYXRhZnJhbWU6CgpgYGB7cn0Kb3J0aG9fcmVzdWx0cyA8LSBkYXRhLnRhYmxlOjpmcmVhZCgiZGF0YS9vcnRob3NpbXNfc3RhdHMuY3N2IikKaGVhZChvcnRob19yZXN1bHRzKQpgYGAKClRoZXJlIGFyZSA5IGNvbHVtbnMgaW4gdGhpcyBtYXRyaXg6CgotICoqU2ltSUQqKiB0aGUgdW5pcXVlIElEIG9mIGVhY2ggc2ltdWxhdGlvbiBleHBlcmltZW50Ci0gKiphbHBoYSoqIHRoZSBhbHBoYSBwYXJhbWV0ZXIgZm9yIHJhdGUgdmFyaWF0aW9uIGFtb25nIHNpdGVzIHVzZWQgaW4gZWFjaCBzaW11bGF0aW9uCi0gKipzY2FsYXIqKiB0aGUgbnVtYmVyIHdpdGggd2hpY2ggYWxsIGJyYW5jaCBsZW5ndGhzIG9mIHRoZSBndWlkZSB3ZXJlIG11bHRpcGxpZWQgdG8gaW5jcmVhc2UvZGVjcmVhc2UgZXZvbHV0aW9uIHRpbWUgZHVyaW5nIHRoZSBzaW11bGF0aW9uCi0gKipvcnRob2dyb3VwcyoqIGhvdyBtYW55IG9ydGhvZ3JvdXBzIHdlcmUgcmV0YWluZWQgYnkgT3J0aG9GaW5kZXIgZnJvbSB0aGUgc2ltdWxhdGVkIHByb3Rlb21lcyAoZXhwZWN0ZWQgMTAsMDAwKQotICoqYWxsX3NwZWNpZXNfc2luZ2xlX2NvcHkqKiBob3cgbWFueSBvZiB0aGUgcmVjb3ZlcmVkIG9ydGhvZ3JvdXBzIGNvbnRhaW5lZCBleGFjdGx5IG9uZSBnZW5lIGZyb20gYWxsIDQ0IHNwZWNpZXMgKGV4cGVjdGVkIDEwLDAwMCkKLSAqKnVuYXNzaWduZWRfZ2VuZXMqKiBob3cgbWFueSBvZiB0aGUgNDQwLDAwMCBpbnB1dCBnZW5lcyAoNDQgKiAxMCwwMDApIHdlcmUgbm90IGFzc2lnbmVkIGJ5IE9ydGhvRmluZGVyIHRvIGFueSBvZiB0aGUgcmVzdWx0aW5nIG9ydGhvZ3JvdXBzIChleHBlY3RlZCAwKQotICoqcGVyY2VudGFnZV91bmFzc2lnbmVkKiogcHJvcG9ydGlvbiBvZiB0aGUgdW5hc3NpZ25lZCBnZW5lcyAodW5hc3NpZ25lZF9nZW5lcyAvIDQ0MCwwMDApIAotICoqbWVhbl9vcnRob2dyb3VwX3NpemUqKiB0aGUgYXZlcmFnZSBudW1iZXIgb2YgZ2VuZXMgY29udGFpbmVkIGluIG9uZSBvcnRob2dyb3VwIChleHBlY3RlZCA0NCkKLSAqKm1lZGlhbl9vcnRob2dyb3VwX3NpemUqKiBoYWxmIG9mIHRoZSBvcnRob2dyb3VwcyBoYXZlIHRoaXMgbnVtYmVyIG9mIGdlbmVzIG9yIG1vcmUsIGFuZCBoYWxmIG9mIHRoZSBvcnRob2dyb3VwcyBoYXZlIHRoaXMgbnVtYmVyIG9mIGdlbmVzIG9yIGZld2VyIChleHBlY3RlZCA0NCkKCjxicj4KCkluIHRoZSBjb250cm9sbGVkIGVudmlyb25tZW50IG9mIHNpbXVsYXRpb25zLCB2YXJpb3VzIGFzcGVjdHMgb2YgdGhlIGV2b2x1dGlvbmFyeSBwcm9jZXNzIHRoYXQgYXJlIG5vdCBrbm93biBpbiByZWFsIHdvcmxkIGNhbiBiZSByZWNvcmRlZC4gVGhpcyBrbm93bGVkZ2UgcHJvdmlkZXMgYSBiYXNpcyBvbiB3aGljaCB0aGUgYWNjdXJhY3kgb2YgbWV0aG9kcywgYWxnb3JpdGhtcyBhbmQgc29mdHdhcmUgY2FuIGJlIGFzc2Vzc2VkLiBJbiBvdXIgZXhhbXBsZSwgdGhlICJ0cnVlIiByZXN1bHQgb2YgdGhlIGV2b2x1dGlvbiBpcyAxMCwwMDAgc2luZ2xlLWNvcHkgZ3JvdXBzIG9mIG9ydGhvbG9ndWVzLCBjb250YW5pbmcgNDQgZ2VuZXMgZWFjaC4gV2UgY2FuIGFzc2VzcyBPcnRob0ZpbmRlcidzIGFjY3VyYWN5IHVuZGVyIGRpZmZlcmVudCBzaW11bGF0aW9uIHNldHRpbmdzIGJ5IGNvbXBhcmluZyB0aGUgcmVzdWx0aW5nIG9ydGhvZ3JvdXBzIHRvIHRoaXMgZXhwZWN0ZWQgcmVzdWx0LiAKCjxicj4KCkxldCdzIHNlZSBmaXJzdCBob3cgbXVjaCB0aGUgbnVtYmVyIG9mIGVzdGltYXRlZCBvcnRob2dyb3VwcyBkZXZpYXRlZCBmcm9tIHRoZSBleHBlY3RlZCAxMCwwMDAgdW5kZXIgZGlmZmVyZW50IGNvbWJpbmF0aW9ucyBvZiBndWlkZSB0cmVlIGxlbmd0aCBhbmQgYWxwaGEgcGFyYW1ldGVyIGZvciByYXRlIHZhcmlhdGlvbiBhbW9uZyBzaXRlczoKCjxicj4KCmBgYAoKYGBgCgo8YnI+CgpUaGlzIHBsb3QgY2FuIGJlIGRpdmlkZWQgaW4gdGhyZWUgcmVnaW9ucywgaW4gcmVzcGVjdCB0byB0aGUgc2NhbGFyIHRoYXQgZ3VpZGUgdHJlZSBsZW5ndGggaXMgbXVsdGlwbGllZCBiZWZvcmUgc2ltdWxhdGlvbi4gRm9yIHNjYWxhcnMgPDIgdGhlIG51bWJlciBvZiBpbmZlcnJlZCBvcmh0b2dyb3VwcyBkb2VzIG5vdCBkZXZpYXRlIG11Y2ggZnJvbSAxMCwwMDAgcmVnYXJkbGVzcyBvZiB0aGUgYWxwaGEgdmFsdWUuIEZvciBzY2FsYXJzIGJldHdlZW4gMi01IHRoZXJlIGlzIG11Y2ggdmFyaWFuY2UgYmV0d2VlbiByZXN1bHRzIGZvciB0aGUgc2FtZSBzY2FsYXIsIGRlcGVuZGluZyBvbiB0aGUgdmFsdWUgb2YgdGhlIGFscGhhIHBhcmFtYXRlcnMuIExhcmdlciBhbHBoYXMgbGVhZCB0byBncmVhdGVyIG51bWJlciBvZiBvcnRob2dyb3VwcyBmb3IgdGhlIHNhbWUgc2NhbGFyLiBIb3dldmVyLCB0aGUgZXN0aW1hdGVkIG51bWJlciBvZiBvcnRob2dyb3VwcyBuZXZlciBnb2VzIGJleW9uZCA4NSwwMDAuIEZvciBzY2FsYXJzID41IHRoZSByZXN1bHRzIGJlY29tZSBtaXhlZC4gQXMgaXQgY2FuIGJlIHNlZW4gaW4gdGhlIGJvdHRvbS1yaWdodCBwYXJ0IG9mIHRoZSBzY2F0dGVycGxvdCwgbGFyZ2Ugc2NhbGFycyBhbmQgbGFyZ2UgYWxwaGFzIGNhbiBkcm9wIHRoZSBlc3RpbWF0ZWQgbnVtYmVyIG9mIG9ydGhvZ3JvdXBzIGNsb3NlciB0byAxMCwwMDAuIFdoYXQgZG9lcyB0aGlzIG1lYW4/IExldCdzIHNlZSB0aGUgbnVtYmVyIG9mIHVuYXNzaWduZWQgZ2VuZXMgcGxvdCB0byBoZWxwIHVzIHVuZGVyc3RhbmQgd2hhdCBpcyBnb2luZyBvbjoKCjxicj4KCmBgYAoKYGBgCgo8YnI+Cjxicj4KCkhlcmUgdGhlIHRyZW5kIGJlY29tZXMgY2xlYXJlci4gRm9yIHNob3J0ZXIgZ3VpZGUgdHJlZXMgYWxtb3N0IGFsbCBnZW5lcyBhcmUgYXNzaWduZWQgdG8gc29tZSBvcnRob2dyb3VwIGJ1dCBhcyB0aGUgZ3VpZGUgdHJlZSBiZWNvbWUgbGFyZ2VyLCB0aGUgbnVtYmVyIG9mIHVuYXNzaWduZWQgZ2VuZXMgaXMgYW5hbG9nb3VzIHRvIHRoZSBhbHBoYSBwYXJhbWV0ZXIuIEZvciB0aGUgc2FtZSBndWlkZSB0cmVlIGxlbmd0aCwgbGFyZ2VyIGFscGhhIGxlYWRzIHRvIG1vcmUgZ2VuZXMgbm90IHBsYWNlZCBpbiBhbnkgb3J0aG9ncm91cCwgcHJvYmFibHkgYmVjYXVzZSB0aGV5IGV2b2x2ZWQgZmFzdGVyIHRoYW4gdGhlaXIgb3J0aG9sb2d1ZXMgYW5kIGJlY2FtZSBzbyBkaXZlcmdlZCB0aGF0IHRoZWlyIHJlbGF0aW9uc2hpcCBjb3VsZCBub3QgYmUgcmVjb2duaXNlZCBieSBPcnRob0ZpbmRlciBhbnltb3JlLiBXZSBjYW4gc2VlIG5vdyB0aGF0IGZvciBsYXJnZSBndWlkZSB0cmVlcyBhbmQgbGFyZ2UgYWxwaGFzICh0b3AtcmlnaHQgY29ybmVyKSwgYWxtb3N0IDQwMCwwMDAgb2YgdGhlIDQ0MCwwMDAgZ2VuZXMgd2VyZSBsZWZ0IHdpdGhvdXQgYW4gb3J0aG9ncm91cC4gU28sIHRoZSBzbWFsbCBudW1iZXIgb2Ygb3J0aG9ncm91cHMgdGhhdCB3YXMgb2JzZXJ2ZWQgaW4gdGhlIHByZXZpb3VzIHBsb3QgZm9yIHRoaXMgc2V0dGluZyB3YXMgc2VlbiBiZWNhdXNlIHRoZSBtYWpvcml0eSBvZiB0aGUgaW5wdXQgZ2VuZXMgd2VyZSB0b28gZGlzdGFudCBmcm9tIGVhY2ggb3RoZXIgdG8gYmUgcGxhY2VkIGluIGFuIG9ydGhvZ3JvdXAuCgo8YnI+CgpBbm90aGVyIGludGVyZXN0aW5nIHRoaW5nIHRvIGxvb2sgYXQgaXMgaG93IG1hbnkgb2YgdGhlIHJlY292ZXJlZCBvcnRob2dyb3VwcyBhcmUgYWxsLXNwZWNpZXMgc2luZ2xlLWNvcHk6Cgo8YnI+CgpgYGAKCmBgYAoKPGJyPgoKSGVyZSB0aGUgZXhwZWN0ZWQgdmFsdWUgaXMgMTAsMDAwIHNpbmNlIHRoaXMgaXMgdGhlIG51bWJlciBvZiBnZW5lcyBpbiB0aGUgc3RhcnRpbmcgcHJvdGVvbWUgb2YgdGhlIHNpbXVsYXRlZCBldm9sdXRpb24sIGFuZCBubyBnZW5lIGR1cGxpY2F0aW9ucyBvciBsb3NzZXMgYXJlIGFsbG93ZWQuIFdlIHNlZSB0aGF0IG9ubHkgd2hlbiB0aGVzZSBpbml0aWFsIGdlbmVzIGV2b2x2ZSBmb3IgdmVyeSBsaXR0bGUgdGltZSB3ZSBhcmUgYWJsZSB0byBlc3RpbWF0ZSBhIHRvdGFsIG51bWJlciBvZiBzaW5nbGUtY29weSBncm91cHMgdGhhdCBhcHByb3hpbWF0ZXMgdGhlIGRlc2lyZWQgdmFsdWUuIEFzIGd1aWRlIHRyZWVzIGdyb3cgbGFyZ2VyLCB0aGVzZSBlc3RpbWF0ZXMgcXVpY2tseSBiZWNvbWUgZGVwZW5kZW50IG9uIHRoZSBhbHBoYSBwYXJhbXRlciBvZiByYXRlIHZhcmlhdGlvbiBhbW9uZyBzaXRlcy4gRm9yIGxhcmdlciBhbHBoYXMsIHdlIGxvc2UgYWJpbGl0eSB0byByZWNvdmVyIGV2ZW4gMjUlIG9mIHRoZSBkZXNpcmVkIGFtb3VudCBvZiBzaW5nbGUtY29weSBvcnRob2dyb3VwcyB3aGVuIHRoZSBzY2FsZXIgYmVjb21lcyA+Mi41LiBGb3Igc21hbGxlciBhbHBoYXMsIHdlIGFyZSBhYmxlIHRvIHJlY292ZXIgbW9yZSB0aGFuIGhhbGYgb2YgdGhlIGAxMCwwMDBgIHNpbmdsZS1jb3B5IG9ydGhvZ3JvdXBzIGZvciBzY2FsYXJzIDwgYDVgLgoKPGJyPgo8YnI+CgpOb3cgbGV0J3MgbG9vayBhdCB0aGUgbGFzdCBwbG90LCB3aGljaCBzaG93cyBob3cgbWVhbiBvcnRob2dyb3VwIHNpemUgdmFyaWVzIGFtb25nIHNpbXVsYXRpb25zOgoKPGJyPgoKYGBgCgpgYGAKCjxicj4KCkFnYWluIHRoZSB0cmVuZCBpcyBjbGVhci4gSGVyZSwgdGhlIGV4cGVjdGVkIHZhbHVlIGlzIDQ0LCBlcXVhbCB0byB0aGUgbnVtYmVyIG9mIHNwZWNpZXMgdXNlZCBpbiB0aGUgc2ltdWxhdGlvbnMuIEluIHNtYWxsZXIgc2NhbGFycywgdGhlIG1lYW4gc2l6ZSBvZiBlYWNoIG9ydGhvZ3JvdXAgaXMgdmVyeSBjbG9zZSB0byA0NC4gQXMgZ3VpZGUgdHJlZXMgYmVjb21lIGxvbmdlciwgdGhlIG1lYW4gb3J0aG9ncm91cCBzaXplIGRlcGVuZHMgaGlnaGx5IG9uIHRoZSB2YWx1ZSBvZiB0aGUgYWxwaGEgcGFyYW1ldGVyLCB1bnRpbCB3ZSBnZXQgdG8gc2NhbGFycyA+OCB3aGVyZSBtZWFuIHNpemVzIGFyZSA8NSBubyBtYXR0ZXIgdGhlIHZhbHVlIG9mIGFscGhhLgoKPGJyPgo8YnI+CgojIyBWZXJkaWN0IGFuZCBuZXh0IHN0ZXBzCgpJdCBpcyBjbGVhciB0aGF0IHdoZW4gZ2VuZXMgYmVjb21lIGRpdmVyZ2VudCwgZWl0aGVyIGJlY2F1c2UgdGhleSBldm9sdmUgZmFzdCBvciBiZWNhdXNlIHRoZXkgZXZvbHZlIGZvciBtb3JlIHRpbWUsIE9ydGhvRmluZGVyIGJlY29tZXMgbGVzcyBhbmQgbGVzcyBhYmxlIHRvIGNvcnJlY3RseSByZWNvdmVyIG91ciAxMCwwMDAgNDQtc3BlY2llcyBzaW5nbGUtY29weSBvcnRob2dyb3Vwcy4gRXZlbiB0aG91Z2ggdGhlIGRhdGEgdXNlZCBjb21lIGZyb20gc2ltdWxhdGlvbnMgd2hpY2ggb3ZlcnNpbXBsaWZpZXMgdHJ1ZSBldmVudHMsIHRoZSByZW1hcmtzIHdpbGwgbW9zdCBsaWtlbHkgaG9sZCBmb3IgcmVhbCBkYXRhIGFzIHdlbGwuIEV2ZW50cyBzdWNoIGFzIGdlbmUgZHVwbGljYXRpb24sIGdlbmUgbG9zcywgaG9yaXpvbnRhbCBnZW5lIHRyYW5zZmVyLCBpbmNvbXBsZXRlIGxpbmVhZ2Ugc29ydGluZyBldGMuIGNvbXBsaWNhdGUgdGhlIGV2b2x1dGlvbmFyeSBwcm9jZXNzIGFuZCBtYWtlIHRoZSBhY2N1cmF0ZSBpbmZlcmVuY2Ugb2Ygc2luZ2xlLWNvcHkgb3J0aG9ncm91cHMgbXVjaCBtb3JlIHRoYW4gaW4gdGhlICJpZGVhbCIgc2ltdWxhdGlvbiBlbnZpcm9ubWVudC4gCgo8YnI+CgpNb3JlIHRoaW5ncyB0aGF0IHdvdWxkIGJlIGludGVyZXN0aW5nIHRvIGxvb2sgYXQgaW4gdGhlIHJlc3VsdHMgb2YgT3J0aG9GaW5kZXIgaW4gc2ltdWxhdGVkIHByb3Rlb21lcyBhcmU6Cjxicj4KCgotIEhvdyBtYW55IG9ydGhvZ3JvdXBzIGFyZSByZWNvdmVyZWQgIHBlciBzcGVjaWVzIGFuZCBob3cgbWFueSBnZW5lcyBmcm9tIGVhY2ggc3BlY2llcyBzdGF5IHVuYXNzaWduZWQuIEl0IHdvdWxkIGJlIGludGVyZXN0aW5nIHRvIHNlZSBob3cgT3J0aG9GaW5kZXIgcGxhY2VzIGdlbmVzIGZyb20gZmFzdGVyLWV2b2x2aW5nIHNwZWNpZXMgaW50byBvcnRob2dyb3VwcyBjb21wYXJlZCB0byBzbG93ZXItZXZvbHZpbmcgb25lcy4gU2luY2UgdGhlIDQ0IHNwZWNpZXMgYXJlIGRpcmVjdGx5IGxpbmtlZCB0byByZWFsIG1ldGF6b2FuIHNwZWNpZXMsIHdlIGNhbiBzZWUgaW4gd2hpY2ggZ3JvdXBzIG9mIGFuaW1hbHMgT3J0aG9GaW5kZXIgYmVjb21lcyBtb3JlIHNlbnNpdGl2ZS4KCi0gQXBhcnQgZnJvbSBsb29raW5nIGp1c3QgYXQgdGhlIG1lYW4gb3J0aG9ncm91cCBzaXplIG9mIGVhY2ggcnVuLCBpdCB3b3VsZCBiZSBpbnRlcmVzdGluZyB0byBsb29rIGF0IHRoZSB3aG9sZSBkaXN0cmlidXRpb24gb2Ygb3J0aG9ncm91cCBzaXplcywgYW5kIGhvdyBsdW1wZWQgdG9nZXRoZXIgb3IgZnJhZ21lbnRlZCB0aGV5IGFyZSB1bmRlciBkaWZmZXJlbnQgc2ltdWxhdGlvbiBzZXR0aW5ncy4gVGhpcyBwYXR0ZXJuIGNhbiBiZSBkaXJlY3RseSBsaW5rZWQgdG8gZ2VuZSBjb250ZW50IHBoeWxvZ2VueSwgc2luY2UgYXMgb3J0aG9ncm91cHMgc3RhcnQgdG8gZ2V0IG1vcmUgZnJhZ21lbnRlZCwgdGhpcyBzcGxpdCBtaWdodCBiZSBwaHlsb2dlbmV0aWNhbGx5IGluZm9ybWF0aXZlIGluIHRoZSBjb250ZXh0IG9mIGdlbmUgcHJlc2VuY2UvYWJzZW5jZS4K</div>
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeSourceEmbed("overview.Rmd");
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
