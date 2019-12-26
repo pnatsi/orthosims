@@ -1,5 +1,5 @@
 ---
-title: "Orthology inference is unable to recover fast-evolving, metazoan single-copy orthologs (and why this is good)"
+title: "Orthology inference is unable to recover fast-evolving, metazoan single-copy orthologs (and why this might be good)"
 author: ""
 output: 
   workflowr::wflow_html:
