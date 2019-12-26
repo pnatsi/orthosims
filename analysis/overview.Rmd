@@ -11,6 +11,7 @@ output:
     number_sections: false     # if you want number sections at each table header
     theme: cosmo              # many options for theme, this one is my favorite.
     highlight: textmate           # specifies the syntax highlighting style
+    css: style.css
 editor_options:
   chunk_output_type: console
 ---
@@ -44,8 +45,9 @@ Evolution from one ancestral to 44 terminal proteomes under a given guide tree w
 OrthoFinder was applied to each of the 200 44-proteome simulated datasets and various result metrics were recorded, such as the total number of resulting orthogroups, the number of genes not assigned to any orthogroup, the mean orthogroups size etc. The results are summarised in the following dataframe:
 
 ```{r}
+library(DT)
 ortho_results <- data.table::fread("data/orthosims_stats.csv")
-head(ortho_results)
+DT::datatable(ortho_results, fillContainer = FALSE, extensions = c('FixedColumns','Scroller'), options = list (scrollX = TRUE,                   dom = 'RMDCT<"clear">lfrtip'))
 ```
 
 There are 9 columns in this matrix:
@@ -60,75 +62,198 @@ There are 9 columns in this matrix:
 - **mean_orthogroup_size** the average number of genes contained in one orthogroup (expected 44)
 - **median_orthogroup_size** half of the orthogroups have this number of genes or more, and half of the orthogroups have this number of genes or fewer (expected 44)
 
-<br>
+
 
 In the controlled environment of simulations, various aspects of the evolutionary process that are not known in real world can be recorded. This knowledge provides a basis on which the accuracy of methods, algorithms and software can be assessed. In our example, the "true" result of the evolution is 10,000 single-copy groups of orthologues, contaning 44 genes each. We can assess OrthoFinder's accuracy under different simulation settings by comparing the resulting orthogroups to this expected result. 
 
-<br>
+
 
 Let's see first how much the number of estimated orthogroups deviated from the expected 10,000 under different combinations of guide tree length and alpha parameter for rate variation among sites:
 
-<br>
+
+
+```{r}
+library(ggplot2)
+scalar_plot <- ggplot2::ggplot(data = ortho_results, 
+                               aes( x = scalar, 
+                                    y = orthogroups,
+                                color = alpha, )) + 
+geom_point() +
+  
+labs(
+    title     = "Total number of orthogroups recovered by OrthoFinder",
+    x         = "Scalar",
+    y         = "Total number of orthogroups")   +
+  
+theme(text                = element_text(family = 'Helvetica',color = "#4A637B",face = "bold")
+        ,axis.title.x     = element_text(size  = 12)
+        ,axis.title.y     = element_text(size  = 12)
+        ,axis.text.x      = element_text(color = "#4A637B")
+        ,axis.text.y      = element_text(color = "#4A637B")
+        ,plot.title       = element_text(size  = 14,hjust = 0 )
+        ,plot.subtitle    = element_text(size  =  7,hjust = 1,face = "italic")
+        ,plot.caption     = element_text(size  =  7)
+        ,panel.background = element_rect(fill = "white", colour = "black", size = 0.5, linetype = "solid")) +
+
+scale_color_gradient2(midpoint = mean(ortho_results$alpha),
+                        low      = "#20B2AA",
+                        mid      = "#DCDCDC",
+                        high     = "red",
+                        space    = "Lab")
+
+
+scalar_plot
 
 ```
 
-```
 
-<br>
 
 This plot can be divided in three regions, in respect to the scalar that guide tree length is multiplied before simulation. For scalars <2 the number of inferred orhtogroups does not deviate much from 10,000 regardless of the alpha value. For scalars between 2-5 there is much variance between results for the same scalar, depending on the value of the alpha paramaters. Larger alphas lead to greater number of orthogroups for the same scalar. However, the estimated number of orthogroups never goes beyond 85,000. For scalars >5 the results become mixed. As it can be seen in the bottom-right part of the scatterplot, large scalars and large alphas can drop the estimated number of orthogroups closer to 10,000. What does this mean? Let's see the number of unassigned genes plot to help us understand what is going on:
 
-<br>
+
+
+```{r}
+library(ggplot2)
+scalar_plot <- ggplot2::ggplot(data = ortho_results, 
+                               aes( x = scalar, 
+                                    y = unassigned_genes,
+                                color = alpha, )) + 
+geom_point() +
+  
+labs(
+    title     = "Number of unassigned genes",
+    x         = "Scalar",
+    y         = "Unassigned genes")   +
+  
+theme(text                = element_text(family = 'Helvetica',color = "#4A637B",face = "bold")
+        ,axis.title.x     = element_text(size  = 12)
+        ,axis.title.y     = element_text(size  = 12)
+        ,axis.text.x      = element_text(color = "#4A637B")
+        ,axis.text.y      = element_text(color = "#4A637B")
+        ,plot.title       = element_text(size  = 14,hjust = 0 )
+        ,plot.subtitle    = element_text(size  =  7,hjust = 1,face = "italic")
+        ,plot.caption     = element_text(size  =  7)
+        ,panel.background = element_rect(fill = "white", colour = "black", size = 0.5, linetype = "solid")) +
+
+scale_color_gradient2(midpoint = mean(ortho_results$alpha),
+                        low      = "#20B2AA",
+                        mid      = "#DCDCDC",
+                        high     = "red",
+                        space    = "Lab")
+
+
+scalar_plot
+
 
 ```
 
-```
 
-<br>
-<br>
+
 
 Here the trend becomes clearer. For shorter guide trees almost all genes are assigned to some orthogroup but as the guide tree become larger, the number of unassigned genes is analogous to the alpha parameter. For the same guide tree length, larger alpha leads to more genes not placed in any orthogroup, probably because they evolved faster than their orthologues and became so diverged that their relationship could not be recognised by OrthoFinder anymore. We can see now that for large guide trees and large alphas (top-right corner), almost 400,000 of the 440,000 genes were left without an orthogroup. So, the small number of orthogroups that was observed in the previous plot for this setting was seen because the majority of the input genes were too distant from each other to be placed in an orthogroup.
 
-<br>
+
 
 Another interesting thing to look at is how many of the recovered orthogroups are all-species single-copy:
 
-<br>
+
+```{r}
+library(ggplot2)
+scalar_plot <- ggplot2::ggplot(data = ortho_results, 
+                               aes( x = scalar, 
+                                    y = all_species_single_copy,
+                                color = alpha, )) + 
+geom_point() +
+  
+labs(
+    title     = "All-species single-copy orthogroups recovered by OrthoFinder",
+    x         = "Scalar",
+    y         = "Single-copy orthogroups")   +
+  
+theme(text                = element_text(family = 'Helvetica',color = "#4A637B",face = "bold")
+        ,axis.title.x     = element_text(size  = 12)
+        ,axis.title.y     = element_text(size  = 12)
+        ,axis.text.x      = element_text(color = "#4A637B")
+        ,axis.text.y      = element_text(color = "#4A637B")
+        ,plot.title       = element_text(size  = 14,hjust = 0 )
+        ,plot.subtitle    = element_text(size  =  7,hjust = 1,face = "italic")
+        ,plot.caption     = element_text(size  =  7)
+        ,panel.background = element_rect(fill = "white", colour = "black", size = 0.5, linetype = "solid")) +
+
+scale_color_gradient2(midpoint = mean(ortho_results$alpha),
+                        low      = "#20B2AA",
+                        mid      = "#DCDCDC",
+                        high     = "red",
+                        space    = "Lab")
+
+
+scalar_plot
+
 
 ```
 
-```
 
-<br>
 
 Here the expected value is 10,000 since this is the number of genes in the starting proteome of the simulated evolution, and no gene duplications or losses are allowed. We see that only when these initial genes evolve for very little time we are able to estimate a total number of single-copy groups that approximates the desired value. As guide trees grow larger, these estimates quickly become dependent on the alpha paramter of rate variation among sites. For larger alphas, we lose ability to recover even 25% of the desired amount of single-copy orthogroups when the scaler becomes >2.5. For smaller alphas, we are able to recover more than half of the `10,000` single-copy orthogroups for scalars < `5`.
 
-<br>
-<br>
+
+
 
 Now let's look at the last plot, which shows how mean orthogroup size varies among simulations:
 
-<br>
+
+
+```{r}
+
+library(ggplot2)
+scalar_plot <- ggplot2::ggplot(data = ortho_results, 
+                               aes( x = scalar, 
+                                    y = mean_orthogroup_size,
+                                color = alpha, )) + 
+geom_point() +
+  
+labs(
+    title     = "Mean orthogroup size",
+    x         = "Scalar",
+    y         = "Single-copy orthogroups")   +
+  
+theme(text                = element_text(family = 'Helvetica',color = "#4A637B",face = "bold")
+        ,axis.title.x     = element_text(size  = 12)
+        ,axis.title.y     = element_text(size  = 12)
+        ,axis.text.x      = element_text(color = "#4A637B")
+        ,axis.text.y      = element_text(color = "#4A637B")
+        ,plot.title       = element_text(size  = 14,hjust = 0 )
+        ,plot.subtitle    = element_text(size  =  7,hjust = 1,face = "italic")
+        ,plot.caption     = element_text(size  =  7)
+        ,panel.background = element_rect(fill = "white", colour = "black", size = 0.5, linetype = "solid")) +
+
+scale_color_gradient2(midpoint = mean(ortho_results$alpha),
+                        low      = "#20B2AA",
+                        mid      = "#DCDCDC",
+                        high     = "red",
+                        space    = "Lab")
+
+
+scalar_plot
+
 
 ```
 
-```
 
-<br>
 
 Again the trend is clear. Here, the expected value is 44, equal to the number of species used in the simulations. In smaller scalars, the mean size of each orthogroup is very close to 44. As guide trees become longer, the mean orthogroup size depends highly on the value of the alpha parameter, until we get to scalars >8 where mean sizes are <5 no matter the value of alpha.
 
-<br>
-<br>
+
+
 
 ## Verdict and next steps
 
 It is clear that when genes become divergent, either because they evolve fast or because they evolve for more time, OrthoFinder becomes less and less able to correctly recover our 10,000 44-species single-copy orthogroups. Even though the data used come from simulations which oversimplifies true events, the remarks will most likely hold for real data as well. Events such as gene duplication, gene loss, horizontal gene transfer, incomplete lineage sorting etc. complicate the evolutionary process and make the accurate inference of single-copy orthogroups much more than in the "ideal" simulation environment. 
 
-<br>
+
 
 More things that would be interesting to look at in the results of OrthoFinder in simulated proteomes are:
-<br>
+
 
 
 - How many orthogroups are recovered  per species and how many genes from each species stay unassigned. It would be interesting to see how OrthoFinder places genes from faster-evolving species into orthogroups compared to slower-evolving ones. Since the 44 species are directly linked to real metazoan species, we can see in which groups of animals OrthoFinder becomes more sensitive.
